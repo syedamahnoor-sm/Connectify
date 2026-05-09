@@ -4,6 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useState, useRef } from "react";
 import { Eye, EyeOff, User, Mail, Lock, Loader2, Check, X } from "lucide-react";
+import axiosInstance from "../api/axiosInstance";
 
 function Register() {
     const navigate = useNavigate();
@@ -45,7 +46,7 @@ function Register() {
     const onSubmit = async (data) => {
         try {
             setLoading(true);
-            const res = await axios.post("http://localhost:5000/api/auth/register", data);
+            const res = await axiosInstance.post("/auth/register", data)
             localStorage.setItem("token", res.data.token);
             toast.success("Welcome! 🎉");
             navigate("/feed");

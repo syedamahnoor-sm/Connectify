@@ -4,6 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useState, useRef } from "react";
 import { Eye, EyeOff, Mail, Lock, Loader2 } from "lucide-react";
+import axiosInstance from "../api/axiosInstance";
 
 function Login() {
     const navigate = useNavigate();
@@ -35,7 +36,7 @@ function Login() {
     const onSubmit = async (data) => {
         try {
             setLoading(true);
-            const res = await axios.post("http://localhost:5000/api/auth/login", data);
+            const res = await axiosInstance.post("/auth/login", data);
             localStorage.setItem("token", res.data.token);
             localStorage.setItem("userId", res.data._id);
 
