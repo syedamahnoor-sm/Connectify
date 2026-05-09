@@ -1,5 +1,6 @@
 import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
+import { Link } from "react-router-dom"
 
 export function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -28,9 +29,11 @@ export function Header() {
                         <button className="px-4 py-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors">
                             Sign In
                         </button>
-                        <button className="px-4 py-2 bg-linear-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:opacity-90 transition-opacity">
-                            Get Started
-                        </button>
+                        <Link to="/register">
+                            <button className="px-4 py-2 bg-linear-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:opacity-90 transition-opacity">
+                                Get Started
+                            </button>
+                        </Link>
                     </div>
 
                     <button
