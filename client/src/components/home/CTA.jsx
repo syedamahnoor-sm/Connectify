@@ -1,4 +1,5 @@
 import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export function CTA() {
     return (
@@ -16,14 +17,12 @@ export function CTA() {
                             </p>
 
                             <div className="flex gap-4">
-                                <button className="px-8 py-4 bg-white text-purple-600 rounded-lg flex items-center gap-2">
-                                    Get Started Free
-                                    <ArrowRight size={20} />
-                                </button>
-
-                                <button className="px-8 py-4 border-2 border-white text-white rounded-lg">
-                                    Learn More
-                                </button>
+                                <Link to="/register">
+                                    <button className="px-8 py-4 bg-white text-purple-600 rounded-lg flex items-center gap-2">
+                                        Get Started Free
+                                        <ArrowRight size={20} />
+                                    </button>
+                                </Link>
                             </div>
                         </div>
 
