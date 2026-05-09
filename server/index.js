@@ -17,7 +17,9 @@ const app = express();
 const server = http.createServer(app);
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: process.env.CLIENT_URL
+}));
 app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
@@ -28,7 +30,8 @@ app.use("/api/notifications", notificationRoutes);
 
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: process.env.CLIENT_URL,
+    methods: ["GET", "POST"]
   },
 });
 
@@ -72,6 +75,8 @@ io.on("connection", (socket) => {
         break;
       }
     }
+
+    io.emit("getUsers", Object.keys(onlineUsers));
   });
 });
 
