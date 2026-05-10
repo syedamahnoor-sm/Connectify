@@ -7,7 +7,7 @@ import sendEmail from "../utils/sendEmail.js";
 //REGISTER
 export const registerUser = async (req, res) => {
     try {
-        const { name, email, password,username } = req.body;
+        const { name, email, password, username } = req.body;
 
         // Check if user exists
         const userExists = await User.findOne({ email });
@@ -33,12 +33,19 @@ export const registerUser = async (req, res) => {
         res.status(201).json({
             _id: user._id,
             name: user.name,
+            username: user.username,
+            profilePic: user.profilePic,
             email: user.email,
             token
         });
 
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.log("REGISTER ERROR:", error);
+
+        console.log("REGISTER ERROR MESSAGE:", error.message);
+
+        console.log("REGISTER ERROR STACK:", error.stack);
+        res.status(500).json({ message: error.message,stack: error.stack });
     }
 };
 
@@ -70,6 +77,8 @@ export const loginUser = async (req, res) => {
         res.json({
             _id: user._id,
             name: user.name,
+            username: user.username,
+            profilePic: user.profilePic,
             email: user.email,
             token
         });

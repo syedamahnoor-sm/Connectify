@@ -46,9 +46,20 @@ function Register() {
     const onSubmit = async (data) => {
         try {
             setLoading(true);
+
             const res = await axiosInstance.post("/auth/register", data)
+
             localStorage.setItem("token", res.data.token);
+            localStorage.setItem("userId", res.data._id);
+
+            localStorage.setItem("user", JSON.stringify({
+                _id: res.data._id,
+                name: res.data.name,
+                username: res.data.username,
+                profilePic: res.data.profilePic
+            }));
             toast.success("Welcome! 🎉");
+
             navigate("/feed");
         } catch (err) {
             toast.error(err.response?.data?.message || "Registration failed");
