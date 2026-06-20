@@ -1,5 +1,6 @@
 import Message from "../models/Message.js";
 import Notification from "../models/Notification.js";
+import User from "../models/User.js";
 
 // SEND MESSAGE
 export const sendMessage = async (req, res) => {
@@ -44,6 +45,49 @@ export const getMessages = async (req, res) => {
         }).sort({ createdAt: 1 });
 
         res.json(messages);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
+export const getConversations = async (req, res) => {
+    try {
+        const currentUserId = req.user.id;
+
+        const messages = await Message.find({
+            $or: [
+                { sender: currentUserId },
+                { receiver: currentUserId }
+            ]
+        })
+            .sort({ createdAt: -1 })
+            .populate("sender", "name username profilePic")
+            .populate("receiver", "name username profilePic");
+
+        const conversationsMap = new Map();
+
+        messages.forEach((msg) => {
+
+            const otherUser =
+                msg.sender._id.toString() === currentUserId
+                    ? msg.receiver
+                    : msg.sender;
+
+            const otherUserId = otherUser._id.toString();
+
+            if (!conversationsMap.has(otherUserId)) {
+                conversationsMap.set(otherUserId, {
+                    userId: otherUser._id,
+                    name: otherUser.username || otherUser.name,
+                    profilePic: otherUser.profilePic,
+                    lastMessage: msg.text,
+                    lastMessageTime: msg.createdAt,
+                });
+            }
+        });
+
+        res.json(Array.from(conversationsMap.values()));
+
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
