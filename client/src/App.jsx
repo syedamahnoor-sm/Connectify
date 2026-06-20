@@ -44,7 +44,7 @@ function App() {
       <Router>
         <NavbarWrapper />
 
-        <div className="pb-16 md:pb-0">
+        <div className="md:pb-0">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/register" element={<Register />} />
