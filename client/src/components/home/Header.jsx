@@ -26,9 +26,11 @@ export function Header() {
                         <a href="#contact" className="text-gray-700 hover:text-purple-600 transition-colors">
                             Contact
                         </a>
-                        <button className="px-4 py-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors">
-                            Sign In
-                        </button>
+                        <Link to="/login">
+                            <button className="px-4 py-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors">
+                                Sign In
+                            </button>
+                        </Link>
                         <Link to="/register">
                             <button className="px-4 py-2 bg-linear-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:opacity-90 transition-opacity">
                                 Get Started
