@@ -112,13 +112,26 @@ const Chat = () => {
                 {messages.map((msg, i) => {
                     const isMe = msg.sender === currentUserId;
                     return (
-                        <div key={i} className={`flex ${isMe ? "justify-end" : "justify-start"}`}>
-                            <div className={`max-w-[75%] px-4 py-2 rounded-2xl text-sm shadow-sm ${isMe
-                                ? "bg-purple-600 text-white rounded-tr-none"
-                                : "bg-white text-gray-800 border border-gray-200 rounded-tl-none"
-                                }`}>
+                        <div
+                            key={i}
+                            className={`flex flex-col ${isMe ? "items-end" : "items-start"
+                                }`}
+                        >
+                            <div
+                                className={`max-w-[75%] px-4 py-2 rounded-2xl text-sm shadow-sm ${isMe
+                                    ? "bg-purple-600 text-white rounded-tr-none"
+                                    : "bg-white text-gray-800 border border-gray-200 rounded-tl-none"
+                                    }`}
+                            >
                                 {msg.text}
                             </div>
+
+                            <span className="text-[10px] text-gray-400 mt-1 px-1">
+                                {new Date(msg.createdAt).toLocaleTimeString([], {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                })}
+                            </span>
                         </div>
                     );
                 })}
