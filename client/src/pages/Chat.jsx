@@ -36,11 +36,16 @@ const Chat = () => {
             try {
                 const res = await API.get(`/messages/${userId}`);
                 setMessages(res.data);
+
+                await API.put(`/messages/seen/${userId}`);
+
             } catch (err) {
                 console.error("Failed to fetch messages");
             }
         };
+
         if (userId) fetchMessages();
+
     }, [userId]);
 
     // AUTO SCROLL
@@ -169,12 +174,29 @@ const Chat = () => {
                                 {msg.text}
                             </div>
 
-                            <span className="text-[10px] text-gray-400 mt-1 px-1">
-                                {new Date(msg.createdAt).toLocaleTimeString([], {
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                })}
-                            </span>
+                            <div
+                                className={`flex items-center gap-2 text-[10px] mt-1 px-1 ${isMe ? "justify-end" : "justify-start"
+                                    }`}
+                            >
+                                <span className="text-gray-400">
+                                    {new Date(msg.createdAt).toLocaleTimeString([], {
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                    })}
+                                </span>
+
+                                {isMe && (
+                                    <span
+                                        className={
+                                            msg.isSeen
+                                                ? "text-blue-500"
+                                                : "text-gray-400"
+                                        }
+                                    >
+                                        {msg.isSeen ? "Seen" : "Sent"}
+                                    </span>
+                                )}
+                            </div>
                         </div>
                     );
                 })}

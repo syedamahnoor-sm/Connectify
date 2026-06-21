@@ -94,3 +94,27 @@ export const getConversations = async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 };
+
+export const markMessagesAsSeen = async (req, res) => {
+    try {
+        await Message.updateMany(
+            {
+                sender: req.params.userId,
+                receiver: req.user.id,
+                isSeen: false,
+            },
+            {
+                isSeen: true,
+            }
+        );
+
+        res.json({
+            message: "Messages marked as seen",
+        });
+
+    } catch (err) {
+        res.status(500).json({
+            message: err.message,
+        });
+    }
+};
