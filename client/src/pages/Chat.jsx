@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { Send, User } from "lucide-react"; 
+import { Send, User } from "lucide-react";
 import API from "../api/axiosInstance";
 import socket from "../socket";
 
@@ -10,6 +10,23 @@ const Chat = () => {
     const [messages, setMessages] = useState([]);
     const [text, setText] = useState("");
     const endRef = useRef();
+    const [chatUser, setChatUser] = useState(null);
+
+    //FETCH SINGLE USER
+    useEffect(() => {
+        const fetchChatUser = async () => {
+            try {
+                const res = await API.get(`/users/${userId}`);
+                setChatUser(res.data);
+            } catch (err) {
+                console.error("Failed to fetch user");
+            }
+        };
+
+        if (userId) {
+            fetchChatUser();
+        }
+    }, [userId]);
 
     // FETCH MESSAGES
     useEffect(() => {
@@ -73,12 +90,20 @@ const Chat = () => {
 
             {/* CHAT HEADER */}
             <div className="p-4 border-b bg-white flex items-center gap-3">
-                <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-600">
-                    <User size={20} />
-                </div>
+                <img
+                    src={chatUser?.profilePic || "/avatar.png"}
+                    alt={chatUser?.username || chatUser?.name}
+                    className="w-10 h-10 rounded-full object-cover"
+                />
+
                 <div>
-                    <h2 className="font-bold text-gray-800">Direct Message</h2>
-                    <p className="text-xs text-green-500 font-medium">Online</p>
+                    <h2 className="font-bold text-gray-800">
+                        {chatUser?.username || chatUser?.name}
+                    </h2>
+
+                    <p className="text-xs text-gray-500">
+                        Direct Message
+                    </p>
                 </div>
             </div>
 
@@ -89,8 +114,8 @@ const Chat = () => {
                     return (
                         <div key={i} className={`flex ${isMe ? "justify-end" : "justify-start"}`}>
                             <div className={`max-w-[75%] px-4 py-2 rounded-2xl text-sm shadow-sm ${isMe
-                                    ? "bg-purple-600 text-white rounded-tr-none"
-                                    : "bg-white text-gray-800 border border-gray-200 rounded-tl-none"
+                                ? "bg-purple-600 text-white rounded-tr-none"
+                                : "bg-white text-gray-800 border border-gray-200 rounded-tl-none"
                                 }`}>
                                 {msg.text}
                             </div>
