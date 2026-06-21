@@ -78,6 +78,28 @@ io.on("connection", (socket) => {
     }
   });
 
+  
+  socket.on("typing", ({ senderId, receiverId }) => {
+    const receiverSocket = onlineUsers[receiverId];
+
+    if (receiverSocket) {
+      io.to(receiverSocket).emit("userTyping", {
+        senderId,
+      });
+    }
+  });
+
+  socket.on("stopTyping", ({ senderId, receiverId }) => {
+    const receiverSocket = onlineUsers[receiverId];
+
+    if (receiverSocket) {
+      io.to(receiverSocket).emit("userStoppedTyping", {
+        senderId,
+      });
+    }
+  });
+
+
   socket.on("disconnect", async () => {
     console.log("User disconnected:", socket.id);
 

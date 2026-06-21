@@ -11,6 +11,8 @@ const Chat = () => {
     const [text, setText] = useState("");
     const endRef = useRef();
     const [chatUser, setChatUser] = useState(null);
+    const [isTyping, setIsTyping] = useState(false);
+    const typingTimeoutRef = useRef(null);
 
     //FETCH SINGLE USER
     useEffect(() => {
@@ -85,6 +87,27 @@ const Chat = () => {
         }
     };
 
+    //LISTEN FOR TYPING EVENT
+    useEffect(() => {
+        socket.on("userTyping", () => {
+            if (data.senderId === userId) {
+                setIsTyping(true);
+            }
+        });
+
+        socket.on("userStoppedTyping", () => {
+            if (data.senderId === userId) {
+                setIsTyping(false);
+            }
+        });
+
+        return () => {
+            socket.off("userTyping");
+            socket.off("userStoppedTyping");
+        };
+    }, []);
+
+
     return (
         <div className="flex flex-col h-[calc(100vh-140px)] max-w-2xl mx-auto bg-white shadow-lg mt-20 rounded-2xl overflow-hidden border border-gray-100">
 
@@ -102,23 +125,27 @@ const Chat = () => {
                     </h2>
 
                     <p
-                        className={`text-xs font-medium ${chatUser?.isOnline
+                        className={`text-xs font-medium ${isTyping
+                            ? "text-purple-500"
+                            : chatUser?.isOnline
                                 ? "text-green-500"
                                 : "text-gray-500"
                             }`}
                     >
-                        {chatUser?.isOnline
-                            ? "Online"
-                            : chatUser?.lastSeen
-                                ? `Last seen ${new Date(
-                                    chatUser.lastSeen
-                                ).toLocaleString([], {
-                                    month: "short",
-                                    day: "numeric",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                })}`
-                                : "Offline"}
+                        {isTyping
+                            ? "Typing..."
+                            : chatUser?.isOnline
+                                ? "Online"
+                                : chatUser?.lastSeen
+                                    ? `Last seen ${new Date(
+                                        chatUser.lastSeen
+                                    ).toLocaleString([], {
+                                        month: "short",
+                                        day: "numeric",
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                    })}`
+                                    : "Offline"}
                     </p>
                 </div>
             </div>
@@ -159,7 +186,23 @@ const Chat = () => {
                 <div className="flex gap-2 bg-gray-100 p-2 rounded-xl border focus-within:border-purple-500 focus-within:ring-1 focus-within:ring-purple-500 transition-all">
                     <input
                         value={text}
-                        onChange={(e) => setText(e.target.value)}
+                        onChange={(e) => {
+                            setText(e.target.value);
+
+                            socket.emit("typing", {
+                                senderId: currentUserId,
+                                receiverId: userId,
+                            });
+
+                            clearTimeout(typingTimeoutRef.current);
+
+                            typingTimeoutRef.current = setTimeout(() => {
+                                socket.emit("stopTyping", {
+                                    senderId: currentUserId,
+                                    receiverId: userId,
+                                });
+                            }, 1000);
+                        }}
                         onKeyPress={(e) => e.key === 'Enter' && handleSend()}
                         className="flex-1 bg-transparent px-2 py-1 outline-none text-sm"
                         placeholder="Write a message..."
