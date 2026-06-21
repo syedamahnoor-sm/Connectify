@@ -80,6 +80,8 @@ export const getConversations = async (req, res) => {
                     userId: otherUser._id,
                     name: otherUser.username || otherUser.name,
                     profilePic: otherUser.profilePic,
+                    isOnline: otherUser.isOnline,
+                    lastSeen: otherUser.lastSeen,
                     lastMessage: msg.text,
                     lastMessageTime: msg.createdAt,
                 });

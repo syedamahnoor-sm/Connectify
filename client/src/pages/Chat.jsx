@@ -101,8 +101,24 @@ const Chat = () => {
                         {chatUser?.username || chatUser?.name}
                     </h2>
 
-                    <p className="text-xs text-gray-500">
-                        Direct Message
+                    <p
+                        className={`text-xs font-medium ${chatUser?.isOnline
+                                ? "text-green-500"
+                                : "text-gray-500"
+                            }`}
+                    >
+                        {chatUser?.isOnline
+                            ? "Online"
+                            : chatUser?.lastSeen
+                                ? `Last seen ${new Date(
+                                    chatUser.lastSeen
+                                ).toLocaleString([], {
+                                    month: "short",
+                                    day: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                })}`
+                                : "Offline"}
                     </p>
                 </div>
             </div>

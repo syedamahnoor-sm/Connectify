@@ -54,7 +54,7 @@ const MessagesSidebar = () => {
                                     alt={user.name}
                                     className="w-10 h-10 rounded-full object-cover border-2 border-transparent group-hover:border-purple-200"
                                 />
-                                {onlineUsers.includes(user.userId) && (
+                                {user.isOnline && (
                                     <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></span>
                                 )}
                             </div>

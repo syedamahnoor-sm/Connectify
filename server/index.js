@@ -9,6 +9,7 @@ import userRoutes from "./routes/userRoutes.js";
 import postRoutes from "./routes/postRoutes.js";
 import profileRoutes from "./routes/profileRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
+import User from "./models/User.js";
 import http from "http";
 import { Server } from "socket.io";
 import notificationRoutes from "./routes/notificationRoutes.js";
@@ -49,8 +50,12 @@ io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
   // USER CONNECT
-  socket.on("addUser", (userId) => {
+  socket.on("addUser", async (userId) => {
     onlineUsers[userId] = socket.id;
+
+    await User.findByIdAndUpdate(userId, {
+      isOnline: true,
+    });
 
     io.emit("getUsers", Object.keys(onlineUsers));
   });
@@ -73,11 +78,16 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("disconnect", () => {
+  socket.on("disconnect", async () => {
     console.log("User disconnected:", socket.id);
 
     for (const userId in onlineUsers) {
       if (onlineUsers[userId] === socket.id) {
+        await User.findByIdAndUpdate(userId, {
+          isOnline: false,
+          lastSeen: new Date(),
+        });
+
         delete onlineUsers[userId];
         break;
       }
