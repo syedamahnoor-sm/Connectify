@@ -94,13 +94,13 @@ const Chat = () => {
 
     //LISTEN FOR TYPING EVENT
     useEffect(() => {
-        socket.on("userTyping", () => {
+        socket.on("userTyping", (data) => {
             if (data.senderId === userId) {
                 setIsTyping(true);
             }
         });
 
-        socket.on("userStoppedTyping", () => {
+        socket.on("userStoppedTyping", (data) => {
             if (data.senderId === userId) {
                 setIsTyping(false);
             }

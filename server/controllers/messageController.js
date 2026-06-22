@@ -84,7 +84,15 @@ export const getConversations = async (req, res) => {
                     lastSeen: otherUser.lastSeen,
                     lastMessage: msg.text,
                     lastMessageTime: msg.createdAt,
+                    unreadCount: 0,
                 });
+            }
+
+            if (
+                msg.receiver._id.toString() === currentUserId &&
+                !msg.isSeen
+            ) {
+                conversationsMap.get(otherUserId).unreadCount += 1;
             }
         });
 
@@ -97,11 +105,10 @@ export const getConversations = async (req, res) => {
 
 export const markMessagesAsSeen = async (req, res) => {
     try {
-        await Message.updateMany(
+        const result = await Message.updateMany(
             {
                 sender: req.params.userId,
                 receiver: req.user.id,
-                isSeen: false,
             },
             {
                 isSeen: true,
@@ -113,6 +120,7 @@ export const markMessagesAsSeen = async (req, res) => {
         });
 
     } catch (err) {
+        console.log(err);
         res.status(500).json({
             message: err.message,
         });

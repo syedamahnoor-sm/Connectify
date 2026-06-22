@@ -61,18 +61,32 @@ const MessagesSidebar = () => {
 
                             <div className="overflow-hidden">
                                 <div className="flex justify-between items-center">
-                                    <p className="font-semibold text-sm text-gray-800 truncate mr-5">
+                                    <p className="font-semibold text-sm text-gray-800 truncate mr-2">
                                         {user.name}
                                     </p>
 
-                                    <span className="text-[10px] text-gray-400 ">
-                                        {new Date(user.lastMessageTime).toLocaleDateString([], {
-                                            month: "numeric",
-                                            day: "numeric",
-                                        })}
-                                    </span>
+                                    <div className="flex items-center gap-2">
+                                        {user.unreadCount > 0 && (
+                                            <span className="bg-purple-600 text-white text-[10px] min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center font-medium">
+                                                {user.unreadCount}
+                                            </span>
+                                        )}
+
+                                        <span className="text-[10px] text-gray-400">
+                                            {new Date(user.lastMessageTime).toLocaleDateString([], {
+                                                month: "numeric",
+                                                day: "numeric",
+                                            })}
+                                        </span>
+                                    </div>
                                 </div>
-                                <p className="text-[11px] text-gray-500 truncate group-hover:text-purple-600">
+
+                                <p
+                                    className={`text-[11px] truncate group-hover:text-purple-600 ${user.unreadCount > 0
+                                        ? "font-medium text-gray-800"
+                                        : "text-gray-500"
+                                        }`}
+                                >
                                     {user.lastMessage}
                                 </p>
                             </div>
