@@ -66,8 +66,11 @@ io.on("connection", (socket) => {
 
     if (receiverSocket) {
       io.to(receiverSocket).emit("receiveMessage", {
-        senderId,
+        sender: senderId,
+        receiver: receiverId,
         text,
+        createdAt: new Date(),
+        isSeen: false,
       });
 
       io.to(receiverSocket).emit("conversationUpdated");

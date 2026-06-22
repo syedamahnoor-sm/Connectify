@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { Send, User } from "lucide-react";
+import { Send } from "lucide-react";
 import API from "../api/axiosInstance";
 import socket from "../socket";
 
@@ -72,6 +72,8 @@ const Chat = () => {
             sender: currentUserId,
             receiver: userId,
             text,
+            createdAt: new Date(),
+            isSeen: false,
         };
 
         setMessages(prev => [...prev, newMsg]);
