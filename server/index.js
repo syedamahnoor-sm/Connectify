@@ -70,6 +70,8 @@ io.on("connection", (socket) => {
         text,
       });
 
+      io.to(receiverSocket).emit("conversationUpdated");
+
       io.to(receiverSocket).emit("newNotification", {
         type: "message",
         senderId,
@@ -78,7 +80,7 @@ io.on("connection", (socket) => {
     }
   });
 
-  
+
   socket.on("typing", ({ senderId, receiverId }) => {
     const receiverSocket = onlineUsers[receiverId];
 

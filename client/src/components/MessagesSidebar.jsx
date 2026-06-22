@@ -10,17 +10,31 @@ const MessagesSidebar = () => {
     const [onlineUsers, setOnlineUsers] = useState([]);
     const currentUserId = localStorage.getItem("userId");
 
+    const fetchUsers = async () => {
+        try {
+            const res = await API.get("/messages/conversations");
+            setUsers(res.data);
+        } catch (err) {
+            console.error("Failed to fetch users");
+        }
+    };
+
+
     useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                const res = await API.get("/messages/conversations");
-                setUsers(res.data);
-            } catch (err) {
-                console.error("Failed to fetch users");
-            }
-        };
         fetchUsers();
     }, [currentUserId]);
+
+
+    useEffect(() => {
+        socket.on("conversationUpdated", () => {
+            fetchUsers();
+        });
+
+        return () => {
+            socket.off("conversationUpdated");
+        };
+    }, []);
+
 
     useEffect(() => {
         socket.emit("addUser", currentUserId);
