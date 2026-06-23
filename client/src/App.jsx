@@ -12,6 +12,9 @@ import Profile from "./pages/Profile"
 import Chat from "./pages/Chat";
 import Notifications from "./pages/Notifications";
 import { BottomNav } from "./components/BottomNav";
+import CreatePostPage from "./pages/CreatePostPage";
+import Conversations from "./pages/Conversations";
+
 
 function NavbarWrapper() {
   const location = useLocation();
@@ -60,14 +63,30 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            
+
             <Route path="/profile/:id" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/chat/:id" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
             <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
+            <Route
+              path="/create-post"
+              element={
+                <ProtectedRoute>
+                  <CreatePostPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/messages"
+              element={
+                <ProtectedRoute>
+                  <Conversations />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
         </div>
 
-        <BottomNavWrapper /> 
+        <BottomNavWrapper />
       </Router>
     </>
   );

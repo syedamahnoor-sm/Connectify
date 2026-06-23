@@ -116,7 +116,7 @@ const Chat = () => {
 
 
     return (
-        <div className="flex flex-col h-[calc(100vh-140px)] max-w-2xl mx-auto bg-white shadow-lg mt-20 rounded-2xl overflow-hidden border border-gray-100">
+        <div className="flex flex-col h-[calc(100vh-140px)] max-w-2xl mx-auto bg-white shadow-lg mt-20 pt-12 rounded-2xl overflow-hidden border border-gray-100">
 
             {/* CHAT HEADER */}
             <div className="p-4 border-b bg-white flex items-center gap-3">
