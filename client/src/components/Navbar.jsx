@@ -1,13 +1,37 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Search, Bell, LogOut, LayoutDashboard, Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import API from "../api/axiosInstance";
 
 function Navbar() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const userId = localStorage.getItem("userId");
   const [search, setSearch] = useState("");
+  const [results, setResults] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
+
+  //SEARCH LOGIC
+  useEffect(() => {
+    const fetchUsers = async () => {
+      if (!search.trim()) {
+        setResults([]);
+        return;
+      }
+
+      try {
+        const res = await API.get(`/users/search?q=${search}`);
+        setResults(res.data);
+      } catch (err) {
+        console.error("Search failed");
+      }
+    };
+
+    const timeout = setTimeout(fetchUsers, 300);
+
+    return () => clearTimeout(timeout);
+  }, [search]);
+
 
   const handleLogout = () => {
     localStorage.clear();
@@ -102,6 +126,37 @@ function Navbar() {
               placeholder="Search people..."
               className="w-full bg-gray-800 border border-gray-700 focus:ring-2 focus:ring-purple-600 focus:outline-none pl-10 rounded-xl py-2 text-sm transition-all"
             />
+            {results.length > 0 && (
+              <div className="absolute top-full mt-2 w-full bg-gray-800 border border-gray-700 rounded-xl shadow-lg overflow-hidden z-50">
+                {results.map((user) => (
+                  <button
+                    key={user._id}
+                    onClick={() => {
+                      navigate(`/profile/${user._id}`);
+                      setSearch("");
+                      setResults([]);
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-700 text-left"
+                  >
+                    <img
+                      src={user.profilePic || "/avatar.png"}
+                      alt={user.username}
+                      className="w-8 h-8 rounded-full object-cover"
+                    />
+
+                    <div>
+                      <p className="text-sm font-medium">
+                        {user.username || user.name}
+                      </p>
+
+                      <p className="text-xs text-gray-400">
+                        {user.name}
+                      </p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
