@@ -63,6 +63,7 @@ io.on("connection", (socket) => {
   // SEND MESSAGE REAL-TIME
   socket.on("sendMessage", ({ senderId, receiverId, text }) => {
     const receiverSocket = onlineUsers[receiverId];
+    const senderSocket = onlineUsers[senderId];
 
     if (receiverSocket) {
       io.to(receiverSocket).emit("receiveMessage", {
@@ -79,7 +80,10 @@ io.on("connection", (socket) => {
         type: "message",
         senderId,
       });
+    }
 
+    if (senderSocket) {
+      io.to(senderSocket).emit("conversationUpdated");
     }
   });
 

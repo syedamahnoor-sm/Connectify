@@ -135,6 +135,7 @@ function Navbar() {
                       navigate(`/profile/${user._id}`);
                       setSearch("");
                       setResults([]);
+                      setIsOpen(false);
                     }}
                     className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-700 text-left"
                   >
@@ -177,22 +178,59 @@ function Navbar() {
       {/* Mobile Menu Dropdown */}
       {isOpen && (
         <div className="md:hidden bg-gray-900 border-b border-gray-800 px-6 py-6 space-y-4 animate-in slide-in-from-top duration-300">
-          <div className="relative w-full mb-4">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-4 h-4" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search..."
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg pl-10 py-2 text-sm"
-            />
-          </div>
-
           <div className="flex flex-col gap-4">
             <NavLinks />
           </div>
         </div>
       )}
+
+      {/* Mobile Search */}
+      <div className="md:hidden px-4 pb-3">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4" />
+
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search people..."
+            className="w-full bg-gray-800 border border-gray-700 rounded-xl pl-10 py-2 text-sm"
+          />
+
+          {results.length > 0 && (
+            <div className="absolute top-full mt-2 w-full bg-gray-800 border border-gray-700 rounded-xl shadow-lg overflow-hidden z-50">
+              {results.map((user) => (
+                <button
+                  key={user._id}
+                  onClick={() => {
+                    navigate(`/profile/${user._id}`);
+                    setSearch("");
+                    setResults([]);
+                    setIsOpen(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-700 text-left"
+                >
+                  <img
+                    src={user.profilePic || "/avatar.png"}
+                    alt={user.username}
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+
+                  <div>
+                    <p className="text-sm font-medium">
+                      {user.username || user.name}
+                    </p>
+
+                    <p className="text-xs text-gray-400">
+                      {user.name}
+                    </p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
     </nav>
   );
 }

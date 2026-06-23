@@ -15,7 +15,7 @@ function Profile() {
     const { id } = useParams();
 
     const navigate = useNavigate();
-    
+
     const [user, setUser] = useState(null);
     const [posts, setPosts] = useState([]);
 
@@ -247,8 +247,8 @@ function Profile() {
                                 <button
                                     onClick={handleFollow}
                                     className={`px-4 py-2 rounded-lg ${isFollowing
-                                            ? "bg-gray-300"
-                                            : "bg-blue-500 text-white"
+                                        ? "bg-gray-300"
+                                        : "bg-blue-500 text-white"
                                         }`}
                                 >
                                     {isFollowing ? "Unfollow" : "Follow"}
@@ -321,9 +321,38 @@ function Profile() {
 
                     {/* POSTS */}
                     {activeTab === "posts" && (
-                        posts.map(post => (
-                            <FeedCard key={post._id} post={post} handleLike={handleLike} />
-                        ))
+                        posts.length > 0 ? (
+                            posts.map(post => (
+                                <FeedCard
+                                    key={post._id}
+                                    post={post}
+                                    handleLike={handleLike}
+                                />
+                            ))
+                        ) : (
+                            <div className="py-16 text-center">
+                                <div className="text-5xl mb-4">📝</div>
+
+                                <h3 className="text-xl font-semibold text-gray-700">
+                                    No posts yet
+                                </h3>
+
+                                <p className="text-gray-500 mt-2">
+                                    {isOwn
+                                        ? "Share your first post with the community."
+                                        : `${user.name} hasn't posted anything yet.`}
+                                </p>
+
+                                {isOwn && (
+                                    <button
+                                        onClick={() => navigate("/create-post")}
+                                        className="mt-5 bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-lg transition"
+                                    >
+                                        Create First Post
+                                    </button>
+                                )}
+                            </div>
+                        )
                     )}
 
                     {/* MEDIA */}
