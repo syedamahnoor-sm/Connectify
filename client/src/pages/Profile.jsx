@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import API from "../api/axiosInstance";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 // Components
 import FeedCard from "../components/FeedCard";
@@ -13,6 +14,8 @@ import EditProfileModal from "../components/profile/EditProfileModal";
 function Profile() {
     const { id } = useParams();
 
+    const navigate = useNavigate();
+    
     const [user, setUser] = useState(null);
     const [posts, setPosts] = useState([]);
 
@@ -164,7 +167,7 @@ function Profile() {
                 [key]: value,
             };
 
-           await API.put("/profile/settings", updatedSettings);
+            await API.put("/profile/settings", updatedSettings);
 
             setUser(prev => ({
                 ...prev,
@@ -240,13 +243,24 @@ function Profile() {
                                 ✏️ Edit Profile
                             </button>
                         ) : (
-                            <button
-                                onClick={handleFollow}
-                                className={`px-4 py-2 rounded-lg ${isFollowing ? "bg-gray-300" : "bg-blue-500 text-white"
-                                    }`}
-                            >
-                                {isFollowing ? "Unfollow" : "Follow"}
-                            </button>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={handleFollow}
+                                    className={`px-4 py-2 rounded-lg ${isFollowing
+                                            ? "bg-gray-300"
+                                            : "bg-blue-500 text-white"
+                                        }`}
+                                >
+                                    {isFollowing ? "Unfollow" : "Follow"}
+                                </button>
+
+                                <button
+                                    onClick={() => navigate(`/chat/${user._id}`)}
+                                    className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700"
+                                >
+                                    Message
+                                </button>
+                            </div>
                         )}
                     </div>
 
