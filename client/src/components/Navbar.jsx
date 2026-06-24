@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Search, Bell, LogOut, LayoutDashboard, Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import API from "../api/axiosInstance";
+import socket from "../socket"
 
 function Navbar() {
   const navigate = useNavigate();
@@ -10,6 +11,8 @@ function Navbar() {
   const [search, setSearch] = useState("");
   const [results, setResults] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+
 
   //SEARCH LOGIC
   useEffect(() => {
@@ -48,6 +51,43 @@ function Navbar() {
     setIsOpen(false);
   };
 
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      try {
+        const res = await API.get("/notifications/unread-count");
+        setUnreadCount(res.data.count);
+      } catch (err) {
+        console.error("Failed to fetch unread count");
+      }
+    };
+
+    fetchUnreadCount();
+  }, []);
+
+
+  useEffect(() => {
+    const handleNotification = (data) => {
+
+      setUnreadCount(prev => prev + 1);
+    };
+
+    socket.on("newNotification", handleNotification);
+
+    return () => {
+      socket.off("newNotification", handleNotification);
+    };
+  }, []);
+
+
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+
+    if (userId) {
+      socket.emit("addUser", userId);
+    }
+  }, []);
+
+
   const NavLinks = () => (
     <>
       {token ? (
@@ -67,7 +107,15 @@ function Navbar() {
             }}
             className="flex gap-2 items-center hover:text-purple-400 transition-colors py-2 md:py-0"
           >
-            <Bell className="w-5 h-5" />
+            <div className="relative">
+              <Bell className="w-5 h-5" />
+
+              {unreadCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center">
+                  {unreadCount}
+                </span>
+              )}
+            </div>
             <span>Notifications</span>
           </button>
 

@@ -21,11 +21,24 @@ export const sendMessage = async (req, res) => {
             req.user.id !== req.body.receiverId
             &&
             receiver.settings?.pushNotifications) {
-            await Notification.create({
-                recipient: req.body.receiverId,
-                sender: req.user.id,
-                type: "message",
-            });
+
+            const existingNotification =
+                await Notification.findOne({
+                    recipient: req.body.receiverId,
+                    sender: req.user.id,
+                    type: "message",
+                    isRead: false,
+                });
+
+            let notification = existingNotification;
+
+            if (!notification) {
+                notification = await Notification.create({
+                    recipient: req.body.receiverId,
+                    sender: req.user.id,
+                    type: "message",
+                });
+            }
         }
 
         res.json(message);

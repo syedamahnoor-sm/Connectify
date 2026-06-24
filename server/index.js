@@ -61,7 +61,7 @@ io.on("connection", (socket) => {
   });
 
   // SEND MESSAGE REAL-TIME
-  socket.on("sendMessage", ({ senderId, receiverId, text }) => {
+  socket.on("sendMessage", async ({ senderId, receiverId, text }) => {
     const receiverSocket = onlineUsers[receiverId];
     const senderSocket = onlineUsers[senderId];
 
@@ -76,9 +76,15 @@ io.on("connection", (socket) => {
 
       io.to(receiverSocket).emit("conversationUpdated");
 
+      const sender = await User.findById(senderId)
+        .select("_id username name profilePic");
+
       io.to(receiverSocket).emit("newNotification", {
+        _id: Date.now().toString(),
         type: "message",
-        senderId,
+        sender,
+        createdAt: new Date(),
+        isRead: false,
       });
     }
 
