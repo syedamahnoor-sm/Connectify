@@ -3,10 +3,15 @@ import API from "../api/axiosInstance";
 import socket from "../socket";
 import toast from "react-hot-toast";
 import { Bell, Heart, MessageSquare, User, Trash2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
 
 const Notifications = () => {
     const [notifications, setNotifications] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [unreadCount, setUnreadCount] = useState(0);
+    const navigate = useNavigate()
+
 
     const fetchNotifications = async () => {
         try {
@@ -20,24 +25,35 @@ const Notifications = () => {
         }
     };
 
+
     useEffect(() => {
         fetchNotifications();
     }, []);
 
-    useEffect(() => {
-        socket.on("newNotification", (data) => {
-            // Update UI list in real-time
-            setNotifications((prev) => [data, ...prev]);
 
-            // Show toast
+    useEffect(() => {
+        const handleNotification = async (data) => {
+
+            await fetchNotifications();
+
+            setUnreadCount(prev => prev + 1);
+
             if (data.type === "message") {
                 toast.success("📩 New message received!");
-            } else if (data.type === "like") {
-                toast("❤️ Someone liked your post!", { icon: '🔥' });
             }
-        });
 
-        return () => socket.off("newNotification");
+            if (data.type === "like") {
+                toast("❤️ Someone liked your post!", {
+                    icon: "🔥",
+                });
+            }
+        };
+
+        socket.on("newNotification", handleNotification);
+
+        return () => {
+            socket.off("newNotification", handleNotification);
+        };
     }, []);
 
     return (
@@ -53,7 +69,16 @@ const Notifications = () => {
                         <h2 className="text-xl font-bold text-gray-800">Notifications</h2>
                     </div>
                     {notifications.length > 0 && (
-                        <button className="text-xs font-semibold text-gray-400 hover:text-red-500 transition-colors flex items-center gap-1">
+                        <button
+                            onClick={async () => {
+                                try {
+                                    await API.delete("/notifications");
+                                    setNotifications([]);
+                                } catch (err) {
+                                    console.error("Failed to clear notifications");
+                                }
+                            }}
+                            className="text-xs font-semibold text-gray-400 hover:text-red-500 transition-colors flex items-center gap-1">
                             <Trash2 size={14} /> Clear All
                         </button>
                     )}
@@ -75,7 +100,31 @@ const Notifications = () => {
                         notifications.map((n) => (
                             <div
                                 key={n._id}
-                                className={`p-4 flex items-start gap-4 hover:bg-gray-50 transition-colors cursor-pointer ${!n.read ? "bg-purple-50/30" : ""}`}
+                                className={`p-4 flex items-start gap-4 hover:bg-gray-50 transition-colors cursor-pointer ${!n.isRead ? "bg-purple-50/30" : ""}`}
+                                onClick={async () => {
+                                    try {
+                                        await API.put(`/notifications/${n._id}/read`);
+                                        setUnreadCount(prev => Math.max(prev - 1, 0));
+                                        setNotifications(prev =>
+                                            prev.map(item =>
+                                                item._id === n._id
+                                                    ? { ...item, isRead: true }
+                                                    : item
+                                            )
+                                        );
+
+                                        if (n.type === "message") {
+                                            navigate(`/chat/${n.sender._id}`);
+                                        }
+
+                                        if (n.type === "like") {
+                                            navigate(`/profile/${n.sender._id}`);
+                                        }
+
+                                    } catch (err) {
+                                        console.error("Failed to mark notification as read");
+                                    }
+                                }}
                             >
                                 {/* Icon/Avatar Section */}
                                 <div className="relative">
@@ -94,19 +143,25 @@ const Notifications = () => {
                                 <div className="flex-1">
                                     <p className="text-sm text-gray-800 leading-tight">
                                         <span className="font-bold hover:underline">
-                                            {n.sender?.username || "Someone"}
+                                            {n.sender?.username || n.sender?.name || "Someone"}
                                         </span>{" "}
                                         {n.type === "like"
                                             ? "liked your recent post"
                                             : "sent you a direct message"}
                                     </p>
                                     <p className="text-[11px] text-gray-400 mt-1 font-medium uppercase tracking-wider">
-                                        Just now
+                                        {new Date(n.createdAt).toLocaleString([], {
+                                            month: "numeric",
+                                            day: "numeric",
+                                            year: "numeric",
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                        })}
                                     </p>
                                 </div>
 
                                 {/* Unread Dot */}
-                                {!n.read && (
+                                {!n.isRead && (
                                     <div className="w-2 h-2 bg-purple-600 rounded-full mt-2"></div>
                                 )}
                             </div>
