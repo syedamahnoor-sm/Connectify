@@ -64,7 +64,7 @@ const MessagesSidebar = () => {
                         >
                             <div className="relative shrink-0">
                                 <img
-                                    src={user.profilePic || "/avatar.png"}
+                                    src={user.profilePic || "/default_pfp.jpg"}
                                     alt={user.name}
                                     className="w-10 h-10 rounded-full object-cover border-2 border-transparent group-hover:border-purple-200"
                                 />

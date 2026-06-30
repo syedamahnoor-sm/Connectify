@@ -10,7 +10,7 @@ function ProfileHeader({ user, postsCount, isOwn, isFollowing, onFollow, onEdit 
 
                 {/* AVATAR */}
                 <img
-                    src={user.profilePic || "https://i.pravatar.cc/150"}
+                    src={user.profilePic || "/default_pfp.jpg"}
                     className="w-28 h-28 rounded-full object-cover border"
                 />
 

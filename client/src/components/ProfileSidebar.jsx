@@ -15,7 +15,7 @@ const ProfileSidebar = ({ user, postsCount }) => {
                     onClick={() => navigate(`/profile/${user?._id}`)}
                 >
                     <img
-                        src={user?.profilePic || "/avatar.png"}
+                        src={user?.profilePic || "/default_pfp.jpg"}
                         className="w-20 h-20 rounded-2xl border-4 border-white object-cover shadow-sm bg-white"
                         alt="Profile"
                     />

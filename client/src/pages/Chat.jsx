@@ -121,7 +121,7 @@ const Chat = () => {
             {/* CHAT HEADER */}
             <div className="p-4 border-b bg-white flex items-center gap-3">
                 <img
-                    src={chatUser?.profilePic || "/avatar.png"}
+                    src={chatUser?.profilePic || "/default_pfp.jpg"}
                     alt={chatUser?.username || chatUser?.name}
                     className="w-10 h-10 rounded-full object-cover"
                 />

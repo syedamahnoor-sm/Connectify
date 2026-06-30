@@ -188,7 +188,7 @@ function Navbar() {
                     className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-700 text-left"
                   >
                     <img
-                      src={user.profilePic || "/avatar.png"}
+                      src={user.profilePic || "/default_pfp.jpg"}
                       alt={user.username}
                       className="w-8 h-8 rounded-full object-cover"
                     />
@@ -259,7 +259,7 @@ function Navbar() {
                   className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-700 text-left"
                 >
                   <img
-                    src={user.profilePic || "/avatar.png"}
+                    src={user.profilePic || "/default_pfp.jpg"}
                     alt={user.username}
                     className="w-8 h-8 rounded-full object-cover"
                   />
