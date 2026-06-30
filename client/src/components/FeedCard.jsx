@@ -34,7 +34,7 @@ export function FeedCard({ post, handleLike, setPosts }) {
     const author = {
         name: post.user?.name || "Unknown",
         username: post.user?.username || "user",
-        avatar: post.user?.profilePic || "https://i.pravatar.cc/40",
+        avatar: post.user?.profilePic || "/default_pfp.jpg"
     };
 
     // ADD COMMENT
@@ -421,7 +421,7 @@ export function FeedCard({ post, handleLike, setPosts }) {
                     <div key={comment._id} className="flex gap-2 items-start group">
 
                         <img
-                            src={comment.user?.profilePic || "https://i.pravatar.cc/30"}
+                            src={comment.user?.profilePic || "/default_pfp.jpg" }
                             className="w-6 h-6 rounded-full"
                         />
 

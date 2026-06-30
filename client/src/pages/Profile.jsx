@@ -228,7 +228,7 @@ function Profile() {
                     {/* AVATAR */}
                     <div className="absolute -top-12 left-6">
                         <img
-                            src={user.profilePic || "https://i.pravatar.cc/150"}
+                            src={user.profilePic || "/default_pfp.jpg"}
                             className="w-24 h-24 rounded-full border-4 border-white object-cover shadow"
                         />
                     </div>

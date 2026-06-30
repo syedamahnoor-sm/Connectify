@@ -62,7 +62,7 @@ function CreatePost({ onPostCreated }) {
             <div className="flex items-start gap-4">
                 {/* USER AVATAR */}
                 <img
-                    src="https://i.pravatar.cc/40"
+                    src="/default_pfp.jpg"
                     className="w-10 h-10 rounded-full object-cover shrink-0"
                     alt="user"
                 />

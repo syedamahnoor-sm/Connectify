@@ -45,7 +45,7 @@ function Conversations() {
                         className="w-full flex items-center gap-3 p-4 border-b hover:bg-gray-50 text-left"
                     >
                         <img
-                            src={user.profilePic || "/avatar.png"}
+                            src={user.profilePic || "/default_pfp.jpg"}
                             alt={user.name}
                             className="w-12 h-12 rounded-full object-cover"
                         />

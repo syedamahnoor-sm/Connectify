@@ -129,7 +129,7 @@ const Notifications = () => {
                                 {/* Icon/Avatar Section */}
                                 <div className="relative">
                                     <img
-                                        src={n.sender?.profilePic || "/avatar.png"}
+                                        src={n.sender?.profilePic || "/default_pfp.jpg"}
                                         className="w-11 h-11 rounded-full object-cover border border-gray-100"
                                         alt="Sender"
                                     />
