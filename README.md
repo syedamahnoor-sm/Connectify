@@ -153,7 +153,7 @@ connectify/
 ## 1️⃣ Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/connectify.git
+git clone https://github.com/syedamahnoor-sm/connectify.git
 cd connectify
 ```
 
