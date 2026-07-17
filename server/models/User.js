@@ -66,12 +66,9 @@ const userSchema = new mongoose.Schema(
         },
 
         settings: {
-            emailNotifications: { type: Boolean, default: true },
-            pushNotifications: { type: Boolean, default: true },
             profileVisibility: { type: String, default: "public" },
             showOnlineStatus: { type: Boolean, default: true },
             allowMessages: { type: Boolean, default: true },
-            showActivity: { type: Boolean, default: true },
         },
         followers: [
             {

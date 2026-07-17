@@ -244,7 +244,6 @@ The application uses responsive layouts and modern UI practices to provide a sea
 
 # 🚀 Future Improvements
 
-- 🔍 Global user & post search
 - 📸 Stories feature
 - 📌 Saved posts
 - 🔄 Infinite scrolling

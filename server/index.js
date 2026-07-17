@@ -51,13 +51,23 @@ io.on("connection", (socket) => {
 
   // USER CONNECT
   socket.on("addUser", async (userId) => {
+
+    const user = await User.findById(userId);
+
+    if (!user) return;
+
     onlineUsers[userId] = socket.id;
 
-    await User.findByIdAndUpdate(userId, {
-      isOnline: true,
-    });
+    if (user.settings.showOnlineStatus) {
+
+      await User.findByIdAndUpdate(userId, {
+        isOnline: true,
+      });
+
+    }
 
     io.emit("getUsers", Object.keys(onlineUsers));
+
   });
 
   // SEND MESSAGE REAL-TIME
@@ -120,10 +130,19 @@ io.on("connection", (socket) => {
 
     for (const userId in onlineUsers) {
       if (onlineUsers[userId] === socket.id) {
-        await User.findByIdAndUpdate(userId, {
-          isOnline: false,
-          lastSeen: new Date(),
-        });
+        const user = await User.findById(userId);
+
+        if (
+          user &&
+          user.settings.showOnlineStatus
+        ) {
+
+          await User.findByIdAndUpdate(userId, {
+            isOnline: false,
+            lastSeen: new Date(),
+          });
+
+        }
 
         delete onlineUsers[userId];
         break;

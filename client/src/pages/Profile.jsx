@@ -12,6 +12,7 @@ import EditProfileModal from "../components/profile/EditProfileModal";
 import AboutSection from "../components/profile/AboutSection";
 import MediaSection from "../components/profile/MediaSection";
 import PostsSection from "../components/profile/PostsSection";
+import SettingsSection from "../components/profile/SettingsSection";
 
 function Profile() {
     const { id } = useParams();
@@ -31,6 +32,7 @@ function Profile() {
 
     const [file, setFile] = useState(null);
     const [coverFile, setCoverFile] = useState(null);
+    const [isPrivateProfile, setIsPrivateProfile] = useState(false);
 
     const currentUser = JSON.parse(localStorage.getItem("user"));
 
@@ -62,8 +64,15 @@ function Profile() {
                 setPosts(userPosts);
 
             } catch (error) {
+
+                if (error.response?.status === 403) {
+                    setIsPrivateProfile(true);
+                    return;
+                }
+
                 console.error(error);
                 toast.error("Failed to load profile");
+
             }
         };
 
@@ -206,13 +215,61 @@ function Profile() {
     // =============================
     //          CONDITIONS
     // =============================
-    if (!user) return <p className="text-center mt-10">Loading...</p>;
+
+    if (isPrivateProfile) {
+        return (
+            <div className="max-w-xl mx-auto mt-32 bg-white rounded-2xl shadow p-10 text-center">
+
+                <div className="text-6xl mb-6">
+                    🔒
+                </div>
+
+                <h2 className="text-2xl font-bold">
+                    Private Profile
+                </h2>
+
+                <p className="text-gray-500 mt-3">
+                    This user has chosen to keep their profile private.
+                </p>
+
+            </div>
+        );
+    }
+
+    if (!user) return <p className="text-center mt-10">Loading profile...</p>;
 
     const isOwn = currentUser._id === user._id;
 
     const isFollowing = user.followers
         .map((id) => id.toString())
         .includes(currentUser._id);
+
+
+    const handleDeleteAccount = async () => {
+
+        const confirmed = window.confirm(
+            "Are you sure you want to permanently delete your account?"
+        );
+
+        if (!confirmed) return;
+
+        try {
+
+            await API.delete("/users/delete-account");
+
+            toast.success("Account deleted.");
+            localStorage.clear();
+            navigate("/login");
+
+        } catch (err) {
+
+            toast.error(
+                err.response?.data?.message || "Failed to delete account."
+            );
+
+        }
+
+    };
 
     // =============================
     //             UI
@@ -264,89 +321,11 @@ function Profile() {
 
                 {/* SETTINGS */}
                 {activeTab === "settings" && (
-                    <div className="space-y-4">
-
-                        {/* NOTIFICATIONS */}
-                        <div className="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
-                            <div>
-                                <h4 className="font-semibold">Email Notifications</h4>
-                                <p className="text-sm text-gray-500">
-                                    Receive updates via email
-                                </p>
-                            </div>
-
-                            <input
-                                type="checkbox"
-                                checked={user.settings?.emailNotifications}
-                                onChange={(e) =>
-                                    handleSettingChange("emailNotifications", e.target.checked)
-                                }
-                            />
-                        </div>
-
-                        {/* PUSH */}
-                        <div className="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
-                            <div>
-                                <h4 className="font-semibold">Push Notifications</h4>
-                            </div>
-
-                            <input
-                                type="checkbox"
-                                checked={user.settings?.pushNotifications}
-                                onChange={(e) =>
-                                    handleSettingChange("pushNotifications", e.target.checked)
-                                }
-                            />
-                        </div>
-
-                        {/* PROFILE VISIBILITY */}
-                        <div className="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
-                            <h4 className="font-semibold">Profile Visibility</h4>
-
-                            <select
-                                value={user.settings?.profileVisibility}
-                                onChange={(e) =>
-                                    handleSettingChange("profileVisibility", e.target.value)
-                                }
-                                className="border rounded px-2 py-1"
-                            >
-                                <option value="public">Public</option>
-                                <option value="private">Private</option>
-                            </select>
-                        </div>
-
-                        {/* ONLINE STATUS */}
-                        <div className="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
-                            <h4 className="font-semibold">Show Online Status</h4>
-
-                            <input
-                                type="checkbox"
-                                checked={user.settings?.showOnlineStatus}
-                                onChange={(e) =>
-                                    handleSettingChange("showOnlineStatus", e.target.checked)
-                                }
-                            />
-                        </div>
-
-                        {/* MESSAGES */}
-                        <div className="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
-                            <h4 className="font-semibold">Allow Messages</h4>
-
-                            <input
-                                type="checkbox"
-                                checked={user.settings?.allowMessages}
-                                onChange={(e) =>
-                                    handleSettingChange("allowMessages", e.target.checked)
-                                }
-                            />
-                        </div>
-
-                        {/* DANGER */}
-                        <div className="bg-red-100 p-4 rounded-lg text-red-600 text-center">
-                            Delete Account
-                        </div>
-
-                    </div>
+                    <SettingsSection
+                        user={user}
+                        handleSettingChange={handleSettingChange}
+                        handleDeleteAccount={handleDeleteAccount}
+                    />
                 )}
 
             </div>
