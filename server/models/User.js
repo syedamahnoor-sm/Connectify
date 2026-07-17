@@ -32,20 +32,37 @@ const userSchema = new mongoose.Schema(
             type: String,
             default: "",
         },
+        website: {
+            type: String,
+            default: "",
+        },
 
-        location: String,
-        website: String,
-
+        location: {
+            type: String,
+            default: "",
+        },
         joinedAt: {
             type: Date,
             default: Date.now
         },
 
         about: {
-            work: String,
-            education: String,
-            relationship: String,
-            interests: [String],
+            work: {
+                type: String,
+                default: "",
+            },
+            education: {
+                type: String,
+                default: "",
+            },
+            relationship: {
+                type: String,
+                default: "",
+            },
+            interests: {
+                type: [String],
+                default: [],
+            },
         },
 
         settings: {
