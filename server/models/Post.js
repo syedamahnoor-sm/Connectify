@@ -5,11 +5,11 @@ const postSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User", 
-      requ1ired: true,
+      required: true,
     },
     content: {
       type: String,
-      required: true,
+      trim: true,
       maxlength: 500,
     },
     media: {

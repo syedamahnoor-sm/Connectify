@@ -24,12 +24,18 @@ export const createPost = async (req, res) => {
       mediaUrl = uploadResult.secure_url;
       mediaType = uploadResult.resource_type;
     }
-    if (!content && !media) {
-      return res.status(400).json({ message: "Post cannot be empty" });
+
+    const { content } = req.body;
+
+    if (!content && !mediaUrl) {
+      return res.status(400).json({
+        message: "Post cannot be empty",
+      });
     }
+
     const post = await Post.create({
       user: req.user.id,
-      content: req.body.content,
+      content,
       media: mediaUrl,
       mediaType,
     });
