@@ -8,8 +8,8 @@ import { useNavigate } from "react-router-dom";
 import FeedCard from "../components/FeedCard";
 import ProfileHeader from "../components/profile/ProfileHeader";
 import ProfileTabs from "../components/profile/ProfileTabs";
-import PhotoGrid from "../components/profile/PhotoGrid";
 import EditProfileModal from "../components/profile/EditProfileModal";
+import AboutSection from "../components/profile/AboutSection";
 
 function Profile() {
     const { id } = useParams();
@@ -229,181 +229,156 @@ function Profile() {
             />
 
             {/* ================= TABS ================= */}
-            <div className="bg-white mt-6 rounded-xl shadow">
-                <div className="flex border-b">
 
-                    {["posts", "media", "about", "settings"].map(tab => (
-                        <button
-                            key={tab}
-                            onClick={() => setActiveTab(tab)}
-                            className={`flex-1 py-3 capitalize ${activeTab === tab
-                                ? "border-b-2 border-blue-500 text-blue-500 font-semibold"
-                                : "text-gray-500"
-                                }`}
-                        >
-                            {tab}
-                        </button>
-                    ))}
+            <ProfileTabs
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+            />
 
-                </div>
+            <div className="bg-white rounded-2xl shadow mt-6 p-6">
+                {/* POSTS */}
+                {activeTab === "posts" && (
+                    posts.length > 0 ? (
+                        posts.map(post => (
+                            <FeedCard
+                                key={post._id}
+                                post={post}
+                                handleLike={handleLike}
+                            />
+                        ))
+                    ) : (
+                        <div className="py-16 text-center">
+                            <div className="text-5xl mb-4">📝</div>
 
-                <div className="p-4">
+                            <h3 className="text-xl font-semibold text-gray-700">
+                                No posts yet
+                            </h3>
 
-                    {/* POSTS */}
-                    {activeTab === "posts" && (
-                        posts.length > 0 ? (
-                            posts.map(post => (
-                                <FeedCard
-                                    key={post._id}
-                                    post={post}
-                                    handleLike={handleLike}
-                                />
-                            ))
-                        ) : (
-                            <div className="py-16 text-center">
-                                <div className="text-5xl mb-4">📝</div>
+                            <p className="text-gray-500 mt-2">
+                                {isOwn
+                                    ? "Share your first post with the community."
+                                    : `${user.name} hasn't posted anything yet.`}
+                            </p>
 
-                                <h3 className="text-xl font-semibold text-gray-700">
-                                    No posts yet
-                                </h3>
-
-                                <p className="text-gray-500 mt-2">
-                                    {isOwn
-                                        ? "Share your first post with the community."
-                                        : `${user.name} hasn't posted anything yet.`}
-                                </p>
-
-                                {isOwn && (
-                                    <button
-                                        onClick={() => navigate("/create-post")}
-                                        className="mt-5 bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-lg transition"
-                                    >
-                                        Create First Post
-                                    </button>
-                                )}
-                            </div>
-                        )
-                    )}
-
-                    {/* MEDIA */}
-                    {activeTab === "media" && (
-                        <div className="grid grid-cols-2 gap-4">
-                            {posts.filter(p => p.media).map(post => (
-                                <img
-                                    key={post._id}
-                                    src={post.media}
-                                    className="rounded-lg"
-                                />
-                            ))}
-                        </div>
-                    )}
-
-                    {/* ABOUT */}
-                    {activeTab === "about" && (
-                        <div>
-                            <h3 className="font-semibold mb-2">About</h3>
-                            <p>{user.bio}</p>
-
-                            <h3 className="mt-4 font-semibold">Interests</h3>
-                            <div className="flex gap-2 mt-2 flex-wrap">
-                                {["Design", "Tech", "Art"].map(tag => (
-                                    <span key={tag} className="bg-gray-200 px-3 py-1 rounded-full text-sm">
-                                        {tag}
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* SETTINGS */}
-                    {activeTab === "settings" && (
-                        <div className="space-y-4">
-
-                            {/* NOTIFICATIONS */}
-                            <div className="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
-                                <div>
-                                    <h4 className="font-semibold">Email Notifications</h4>
-                                    <p className="text-sm text-gray-500">
-                                        Receive updates via email
-                                    </p>
-                                </div>
-
-                                <input
-                                    type="checkbox"
-                                    checked={user.settings?.emailNotifications}
-                                    onChange={(e) =>
-                                        handleSettingChange("emailNotifications", e.target.checked)
-                                    }
-                                />
-                            </div>
-
-                            {/* PUSH */}
-                            <div className="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
-                                <div>
-                                    <h4 className="font-semibold">Push Notifications</h4>
-                                </div>
-
-                                <input
-                                    type="checkbox"
-                                    checked={user.settings?.pushNotifications}
-                                    onChange={(e) =>
-                                        handleSettingChange("pushNotifications", e.target.checked)
-                                    }
-                                />
-                            </div>
-
-                            {/* PROFILE VISIBILITY */}
-                            <div className="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
-                                <h4 className="font-semibold">Profile Visibility</h4>
-
-                                <select
-                                    value={user.settings?.profileVisibility}
-                                    onChange={(e) =>
-                                        handleSettingChange("profileVisibility", e.target.value)
-                                    }
-                                    className="border rounded px-2 py-1"
+                            {isOwn && (
+                                <button
+                                    onClick={() => navigate("/create-post")}
+                                    className="mt-5 bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-lg transition"
                                 >
-                                    <option value="public">Public</option>
-                                    <option value="private">Private</option>
-                                </select>
-                            </div>
-
-                            {/* ONLINE STATUS */}
-                            <div className="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
-                                <h4 className="font-semibold">Show Online Status</h4>
-
-                                <input
-                                    type="checkbox"
-                                    checked={user.settings?.showOnlineStatus}
-                                    onChange={(e) =>
-                                        handleSettingChange("showOnlineStatus", e.target.checked)
-                                    }
-                                />
-                            </div>
-
-                            {/* MESSAGES */}
-                            <div className="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
-                                <h4 className="font-semibold">Allow Messages</h4>
-
-                                <input
-                                    type="checkbox"
-                                    checked={user.settings?.allowMessages}
-                                    onChange={(e) =>
-                                        handleSettingChange("allowMessages", e.target.checked)
-                                    }
-                                />
-                            </div>
-
-                            {/* DANGER */}
-                            <div className="bg-red-100 p-4 rounded-lg text-red-600 text-center">
-                                Delete Account
-                            </div>
-
+                                    Create First Post
+                                </button>
+                            )}
                         </div>
-                    )}
+                    )
+                )}
 
-                </div>
+                {/* MEDIA */}
+                {activeTab === "media" && (
+                    <div className="grid grid-cols-2 gap-4">
+                        {posts.filter(p => p.media).map(post => (
+                            <img
+                                key={post._id}
+                                src={post.media}
+                                className="rounded-lg"
+                            />
+                        ))}
+                    </div>
+                )}
+
+                {/* ABOUT */}
+                {activeTab === "about" && (
+                    <AboutSection user={user} />
+                )}
+
+                {/* SETTINGS */}
+                {activeTab === "settings" && (
+                    <div className="space-y-4">
+
+                        {/* NOTIFICATIONS */}
+                        <div className="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
+                            <div>
+                                <h4 className="font-semibold">Email Notifications</h4>
+                                <p className="text-sm text-gray-500">
+                                    Receive updates via email
+                                </p>
+                            </div>
+
+                            <input
+                                type="checkbox"
+                                checked={user.settings?.emailNotifications}
+                                onChange={(e) =>
+                                    handleSettingChange("emailNotifications", e.target.checked)
+                                }
+                            />
+                        </div>
+
+                        {/* PUSH */}
+                        <div className="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
+                            <div>
+                                <h4 className="font-semibold">Push Notifications</h4>
+                            </div>
+
+                            <input
+                                type="checkbox"
+                                checked={user.settings?.pushNotifications}
+                                onChange={(e) =>
+                                    handleSettingChange("pushNotifications", e.target.checked)
+                                }
+                            />
+                        </div>
+
+                        {/* PROFILE VISIBILITY */}
+                        <div className="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
+                            <h4 className="font-semibold">Profile Visibility</h4>
+
+                            <select
+                                value={user.settings?.profileVisibility}
+                                onChange={(e) =>
+                                    handleSettingChange("profileVisibility", e.target.value)
+                                }
+                                className="border rounded px-2 py-1"
+                            >
+                                <option value="public">Public</option>
+                                <option value="private">Private</option>
+                            </select>
+                        </div>
+
+                        {/* ONLINE STATUS */}
+                        <div className="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
+                            <h4 className="font-semibold">Show Online Status</h4>
+
+                            <input
+                                type="checkbox"
+                                checked={user.settings?.showOnlineStatus}
+                                onChange={(e) =>
+                                    handleSettingChange("showOnlineStatus", e.target.checked)
+                                }
+                            />
+                        </div>
+
+                        {/* MESSAGES */}
+                        <div className="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
+                            <h4 className="font-semibold">Allow Messages</h4>
+
+                            <input
+                                type="checkbox"
+                                checked={user.settings?.allowMessages}
+                                onChange={(e) =>
+                                    handleSettingChange("allowMessages", e.target.checked)
+                                }
+                            />
+                        </div>
+
+                        {/* DANGER */}
+                        <div className="bg-red-100 p-4 rounded-lg text-red-600 text-center">
+                            Delete Account
+                        </div>
+
+                    </div>
+                )}
+
             </div>
+
 
             {/* MODAL */}
             {showModal && (
