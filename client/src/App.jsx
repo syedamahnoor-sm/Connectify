@@ -14,7 +14,7 @@ import Notifications from "./pages/Notifications";
 import { BottomNav } from "./components/BottomNav";
 import CreatePostPage from "./pages/CreatePostPage";
 import Conversations from "./pages/Conversations";
-
+import SinglePost from "./pages/SinglePost";
 
 function NavbarWrapper() {
   const location = useLocation();
@@ -83,9 +83,9 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path="/post/:id" element={<SinglePost />} />
           </Routes>
         </div>
-
         <BottomNavWrapper />
       </Router>
     </>

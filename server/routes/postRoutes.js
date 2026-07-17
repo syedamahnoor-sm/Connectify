@@ -1,5 +1,5 @@
 import express from "express";
-import { createPost, getPosts, toggleLike, addComment, deleteComment, editComment, deletePost, editPost } from "../controllers/postController.js";
+import { createPost, getPosts, toggleLike, addComment, deleteComment, editComment, deletePost, editPost, getSinglePost } from "../controllers/postController.js";
 import { protect } from "../middleware/authMiddleware.js";
 import upload from "../middleware/upload.js";
 
@@ -15,6 +15,7 @@ router.delete("/:postId/comment/:commentId", protect, deleteComment);
 router.put("/:postId/comment/:commentId", protect, editComment);
 
 router.put("/:id/like", protect, toggleLike);
+router.get("/:id", protect, getSinglePost);
 
 export default router;
 

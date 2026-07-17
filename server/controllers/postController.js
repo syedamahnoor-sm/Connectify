@@ -196,3 +196,24 @@ export const editComment = async (req, res) => {
 
   res.json(post.comments);
 };
+
+
+export const getSinglePost = async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id)
+      .populate("user", "name username profilePic")
+      .populate("comments.user", "name username profilePic");
+
+    if (!post) {
+      return res.status(404).json({
+        message: "Post not found",
+      });
+    }
+
+    res.json(post);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};

@@ -5,7 +5,11 @@ import API from "../api/axiosInstance";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
-export function FeedCard({ post, handleLike, setPosts }) {
+export function FeedCard({
+    post,
+    handleLike,
+    setPosts,
+}) {
 
     const navigate = useNavigate();
 
@@ -149,9 +153,27 @@ export function FeedCard({ post, handleLike, setPosts }) {
         }
     };
 
-    const handleShare = () => {
-        navigator.clipboard.writeText(window.location.href);
-        toast.success("Post link copied!");
+    const handleShare = async () => {
+        const shareUrl = `${window.location.origin}/post/${post._id}`;
+
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: `${author.name}'s post`,
+                    text: post.content,
+                    url: shareUrl,
+                });
+            } catch {
+                // User cancelled sharing
+            }
+        } else {
+            try {
+                await navigator.clipboard.writeText(shareUrl);
+                toast.success("Post link copied!");
+            } catch {
+                toast.error("Failed to copy link");
+            }
+        }
     };
 
     const handleBookmark = () => {
@@ -185,7 +207,7 @@ export function FeedCard({ post, handleLike, setPosts }) {
     const handleEditPost = async () => {
         if (!editPostText.trim()) return;
 
-        const oldContent = post.content;   
+        const oldContent = post.content;
 
         setPosts(prev =>
             prev.map(p =>
@@ -246,9 +268,6 @@ export function FeedCard({ post, handleLike, setPosts }) {
                                 />
                             </>
                         )}
-
-                        <MoreHorizontal className="w-5 h-5" />
-
                     </div>
                 </button>
             </div>
@@ -257,7 +276,7 @@ export function FeedCard({ post, handleLike, setPosts }) {
             {post.content && (
                 <div
                     onDoubleClick={() => {
-                        handleLike(post._id);
+                        handleLike?.(post._id);
                         setShowHeart(true);
                         setTimeout(() => setShowHeart(false), 600);
                     }}
@@ -294,7 +313,7 @@ export function FeedCard({ post, handleLike, setPosts }) {
             {type === "photo" && post.media && (
                 <div
                     onDoubleClick={() => {
-                        handleLike(post._id);
+                        handleLike?.(post._id);
                         setShowHeart(true);
                         setTimeout(() => setShowHeart(false), 600);
                     }}
@@ -318,7 +337,7 @@ export function FeedCard({ post, handleLike, setPosts }) {
             {type === "video" && post.media && (
                 <div
                     onDoubleClick={() => {
-                        handleLike(post._id);
+                        handleLike?.(post._id);
                         setShowHeart(true);
                         setTimeout(() => setShowHeart(false), 600);
                     }}
@@ -338,7 +357,7 @@ export function FeedCard({ post, handleLike, setPosts }) {
                     <div className="flex items-center gap-6">
 
                         <button
-                            onClick={() => handleLike(post._id)}
+                            onClick={() => handleLike?.(post._id)}
                             className={`flex items-center gap-2 transition-all active:scale-75 ${isLiked ? "text-red-500" : "text-gray-600 hover:text-red-500"
                                 }`}
                         >
@@ -421,7 +440,7 @@ export function FeedCard({ post, handleLike, setPosts }) {
                     <div key={comment._id} className="flex gap-2 items-start group">
 
                         <img
-                            src={comment.user?.profilePic || "/default_pfp.jpg" }
+                            src={comment.user?.profilePic || "/default_pfp.jpg"}
                             className="w-6 h-6 rounded-full"
                         />
 
