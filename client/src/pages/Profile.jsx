@@ -10,6 +10,7 @@ import ProfileHeader from "../components/profile/ProfileHeader";
 import ProfileTabs from "../components/profile/ProfileTabs";
 import EditProfileModal from "../components/profile/EditProfileModal";
 import AboutSection from "../components/profile/AboutSection";
+import MediaSection from "../components/profile/MediaSection";
 
 function Profile() {
     const { id } = useParams();
@@ -274,15 +275,11 @@ function Profile() {
 
                 {/* MEDIA */}
                 {activeTab === "media" && (
-                    <div className="grid grid-cols-2 gap-4">
-                        {posts.filter(p => p.media).map(post => (
-                            <img
-                                key={post._id}
-                                src={post.media}
-                                className="rounded-lg"
-                            />
-                        ))}
-                    </div>
+                    <MediaSection
+                        posts={posts}
+                        user={user}
+                        isOwn={isOwn}
+                    />
                 )}
 
                 {/* ABOUT */}
