@@ -11,6 +11,7 @@ import ProfileTabs from "../components/profile/ProfileTabs";
 import EditProfileModal from "../components/profile/EditProfileModal";
 import AboutSection from "../components/profile/AboutSection";
 import MediaSection from "../components/profile/MediaSection";
+import PostsSection from "../components/profile/PostsSection";
 
 function Profile() {
     const { id } = useParams();
@@ -239,38 +240,12 @@ function Profile() {
             <div className="bg-white rounded-2xl shadow mt-6 p-6">
                 {/* POSTS */}
                 {activeTab === "posts" && (
-                    posts.length > 0 ? (
-                        posts.map(post => (
-                            <FeedCard
-                                key={post._id}
-                                post={post}
-                                handleLike={handleLike}
-                            />
-                        ))
-                    ) : (
-                        <div className="py-16 text-center">
-                            <div className="text-5xl mb-4">📝</div>
-
-                            <h3 className="text-xl font-semibold text-gray-700">
-                                No posts yet
-                            </h3>
-
-                            <p className="text-gray-500 mt-2">
-                                {isOwn
-                                    ? "Share your first post with the community."
-                                    : `${user.name} hasn't posted anything yet.`}
-                            </p>
-
-                            {isOwn && (
-                                <button
-                                    onClick={() => navigate("/create-post")}
-                                    className="mt-5 bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-lg transition"
-                                >
-                                    Create First Post
-                                </button>
-                            )}
-                        </div>
-                    )
+                    <PostsSection
+                        posts={posts}
+                        user={user}
+                        isOwn={isOwn}
+                        handleLike={handleLike}
+                    />
                 )}
 
                 {/* MEDIA */}
