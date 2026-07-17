@@ -44,6 +44,11 @@ function Profile() {
                 setForm({
                     name: res.data.name,
                     bio: res.data.bio || "",
+                    location: res.data.location || "",
+                    website: res.data.website || "",
+                    work: res.data.about?.work || "",
+                    education: res.data.about?.education || "",
+                    interests: res.data.about?.interests || [],
                 });
 
                 const postRes = await API.get("/posts");
@@ -95,25 +100,43 @@ function Profile() {
             formData.append("bio", form.bio);
             formData.append("location", form.location);
             formData.append("website", form.website);
+            formData.append("work", form.work);
+            formData.append("education", form.education);
+            formData.append(
+                "interests",
+                JSON.stringify(form.interests)
+            );
 
-            // PROFILE IMAGE
             if (file) {
                 formData.append("profilePic", file);
             }
 
-            // COVER IMAGE 
             if (coverFile) {
                 formData.append("coverPic", coverFile);
             }
 
-            // SETTINGS
-            formData.append("settings", JSON.stringify(user.settings));
+            formData.append(
+                "settings",
+                JSON.stringify(user.settings)
+            );
 
             const res = await API.put("/profile", formData);
 
+            // Update UI
             setUser(res.data);
 
+            // Success message
+            toast.success("Profile updated successfully!");
+
+            // Close modal
+            setShowModal(false);
+
+            // Reset selected files
+            setFile(null);
+            setCoverFile(null);
+
         } catch (err) {
+            console.error(err);
             toast.error("Update failed");
         }
     };
@@ -196,107 +219,14 @@ function Profile() {
         <div className="max-w-5xl mx-auto mt-25 mb-25">
 
             {/* ================= HEADER ================= */}
-            <div className="bg-white rounded-xl shadow overflow-hidden">
-
-                {/* COVER */}
-                <div
-                    className="h-48 bg-cover bg-center relative"
-                    style={{
-                        backgroundImage: `url(${user.coverPic || ""})`,
-                    }}
-                >
-
-                    {/* EDIT COVER BUTTON */}
-                    {isOwn && (
-                        <>
-                            <label className="absolute right-4 bottom-4 bg-white px-3 py-1 rounded-lg shadow text-sm cursor-pointer">
-                                📷 Edit Cover
-                                <input
-                                    type="file"
-                                    className="hidden"
-                                    onChange={(e) => setCoverFile(e.target.files[0])}
-                                />
-                            </label>
-                        </>
-                    )}
-
-                </div>
-
-                {/* PROFILE SECTION */}
-                <div className="p-6 relative">
-
-                    {/* AVATAR */}
-                    <div className="absolute -top-12 left-6">
-                        <img
-                            src={user.profilePic || "/default_pfp.jpg"}
-                            className="w-24 h-24 rounded-full border-4 border-white object-cover shadow"
-                        />
-                    </div>
-
-                    {/* EDIT PROFILE BUTTON */}
-                    <div className="flex justify-end">
-                        {isOwn ? (
-                            <button
-                                onClick={() => setShowModal(true)}
-                                className="bg-blue-500 text-white px-4 py-2 rounded-lg"
-                            >
-                                ✏️ Edit Profile
-                            </button>
-                        ) : (
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={handleFollow}
-                                    className={`px-4 py-2 rounded-lg ${isFollowing
-                                        ? "bg-gray-300"
-                                        : "bg-blue-500 text-white"
-                                        }`}
-                                >
-                                    {isFollowing ? "Unfollow" : "Follow"}
-                                </button>
-
-                                <button
-                                    onClick={() => navigate(`/chat/${user._id}`)}
-                                    className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700"
-                                >
-                                    Message
-                                </button>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* NAME */}
-                    <div className="mt-8">
-                        <h2 className="text-2xl font-bold">{user.name}</h2>
-                        <p className="text-gray-500">@{user.username}</p>
-
-                        <p className="mt-2 text-gray-700">{user.bio}</p>
-
-                        {/* DETAILS */}
-                        <div className="flex gap-6 text-sm text-gray-600 mt-3">
-                            <span>📍 {user.location || "No location"}</span>
-
-                            <span>
-                                🔗 {user.website ? (
-                                    <a href={user.website} className="text-blue-500">
-                                        {user.website}
-                                    </a>
-                                ) : "No website"}
-                            </span>
-
-                            <span>
-                                📅 Joined {new Date(user.joinedAt).toLocaleDateString()}
-                            </span>
-                        </div>
-
-                        {/* STATS */}
-                        <div className="flex gap-6 mt-4">
-                            <span><b>{posts.length}</b> Posts</span>
-                            <span><b>{user.followers.length}</b> Followers</span>
-                            <span><b>{user.following.length}</b> Following</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <ProfileHeader
+                user={user}
+                postsCount={posts.length}
+                isOwn={isOwn}
+                isFollowing={isFollowing}
+                onFollow={handleFollow}
+                onEdit={() => setShowModal(true)}
+            />
 
             {/* ================= TABS ================= */}
             <div className="bg-white mt-6 rounded-xl shadow">
@@ -481,6 +411,7 @@ function Profile() {
                     form={form}
                     setForm={setForm}
                     setFile={setFile}
+                    setCoverFile={setCoverFile}
                     onSave={handleUpdate}
                     onClose={() => setShowModal(false)}
                 />
