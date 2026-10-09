@@ -43,7 +43,8 @@ export const sendMessage = async (req, res) => {
 
         res.json(message);
     } catch (err) {
-        res.status(500).json({ message: err.message });
+        console.error(err);
+        res.status(500).json({ message: "Something went wrong" });
     }
 };
 
@@ -59,7 +60,8 @@ export const getMessages = async (req, res) => {
 
         res.json(messages);
     } catch (err) {
-        res.status(500).json({ message: err.message });
+        console.error(err);
+        res.status(500).json({ message: "Something went wrong" });
     }
 };
 
@@ -112,7 +114,8 @@ export const getConversations = async (req, res) => {
         res.json(Array.from(conversationsMap.values()));
 
     } catch (err) {
-        res.status(500).json({ message: err.message });
+        console.error(err);
+        res.status(500).json({ message: "Something went wrong" });
     }
 };
 
@@ -134,8 +137,7 @@ export const markMessagesAsSeen = async (req, res) => {
 
     } catch (err) {
         console.log(err);
-        res.status(500).json({
-            message: err.message,
-        });
+        console.error(err);
+        res.status(500).json({ message: "Something went wrong" });
     }
 };

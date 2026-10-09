@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Search, Bell, LogOut, LayoutDashboard, Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import API from "../api/axiosInstance";
-import socket from "../socket"
+import socket, { disconnectSocket } from "../socket"
 
 function Navbar() {
   const navigate = useNavigate();
@@ -37,7 +37,8 @@ function Navbar() {
 
 
   const handleLogout = () => {
-    localStorage.clear();
+    disconnectSocket();
+            localStorage.clear();
     navigate("/login");
   };
 

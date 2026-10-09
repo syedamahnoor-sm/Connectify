@@ -10,7 +10,8 @@ export const getNotifications = async (req, res) => {
 
         res.json(notifications);
     } catch (err) {
-        res.status(500).json({ message: err.message });
+        console.error(err);
+        res.status(500).json({ message: "Something went wrong" });
     }
 };
 
@@ -29,9 +30,8 @@ export const markNotificationRead = async (req, res) => {
         });
 
     } catch (err) {
-        res.status(500).json({
-            message: err.message,
-        });
+        console.error(err);
+        res.status(500).json({ message: "Something went wrong" });
     }
 };
 
@@ -47,9 +47,8 @@ export const clearNotifications = async (req, res) => {
         });
 
     } catch (err) {
-        res.status(500).json({
-            message: err.message,
-        });
+        console.error(err);
+        res.status(500).json({ message: "Something went wrong" });
     }
 };
 
@@ -64,8 +63,7 @@ export const getUnreadCount = async (req, res) => {
         res.json({ count });
 
     } catch (err) {
-        res.status(500).json({
-            message: err.message,
-        });
+        console.error(err);
+        res.status(500).json({ message: "Something went wrong" });
     }
 };

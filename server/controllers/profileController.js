@@ -16,7 +16,8 @@ export const getUserProfile = async (req, res) => {
         res.json(user);
 
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error(error);
+        res.status(500).json({ message: "Something went wrong" });
     }
 };
 
@@ -68,7 +69,8 @@ export const updateProfile = async (req, res) => {
         res.json(user);
 
     } catch (err) {
-        res.status(500).json({ message: err.message });
+        console.error(err);
+        res.status(500).json({ message: "Something went wrong" });
     }
 };
 
@@ -88,7 +90,8 @@ export const updateSettings = async (req, res) => {
 
     } catch (err) {
         console.log("SETTINGS ERROR:", err);
-        res.status(500).json({ message: err.message });
+        console.error(err);
+        res.status(500).json({ message: "Something went wrong" });
     }
 };
 
@@ -128,6 +131,7 @@ export const toggleFollow = async (req, res) => {
         });
 
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error(error);
+        res.status(500).json({ message: "Something went wrong" });
     }
 };
