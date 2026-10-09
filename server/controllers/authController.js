@@ -40,12 +40,11 @@ export const registerUser = async (req, res) => {
         });
 
     } catch (error) {
-        console.log("REGISTER ERROR:", error);
-
-        console.log("REGISTER ERROR MESSAGE:", error.message);
-
-        console.log("REGISTER ERROR STACK:", error.stack);
-        res.status(500).json({ message: error.message,stack: error.stack });
+        console.error("REGISTER ERROR:", error);
+        if (error.code === 11000) {
+            return res.status(400).json({ message: "Email or username is already taken" });
+        }
+        res.status(500).json({ message: "Something went wrong" });
     }
 };
 
@@ -84,7 +83,8 @@ export const loginUser = async (req, res) => {
         });
 
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error(error);
+        res.status(500).json({ message: "Something went wrong" });
     }
 };
 
@@ -93,8 +93,11 @@ export const forgotPassword = async (req, res) => {
     try {
         const user = await User.findOne({ email: req.body.email });
 
+        // Same response whether or not the account exists (prevents email enumeration)
         if (!user) {
-            return res.status(404).json({ message: "User not found" });
+            return res.json({
+                message: "If an account with that email exists, a reset link has been sent.",
+            });
         }
 
         // 1. Generate token
@@ -114,7 +117,8 @@ export const forgotPassword = async (req, res) => {
         await user.save();
 
         // 4. Create reset URL
-        const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
+        const clientUrl = (process.env.CLIENT_URL || "http://localhost:5173").replace(/\/$/, "");
+        const resetUrl = `${clientUrl}/reset-password/${resetToken}`;
 
         // 4. Create email message
         const message = `
@@ -165,11 +169,12 @@ export const forgotPassword = async (req, res) => {
         });
 
         res.json({
-            message: "Email sent successfully",
+            message: "If an account with that email exists, a reset link has been sent.",
         });
 
     } catch (err) {
-        res.status(500).json({ message: err.message });
+        console.error(err);
+        res.status(500).json({ message: "Something went wrong" });
     }
 };
 

@@ -15,6 +15,10 @@ import { BottomNav } from "./components/BottomNav";
 import CreatePostPage from "./pages/CreatePostPage";
 import Conversations from "./pages/Conversations";
 import SinglePost from "./pages/SinglePost";
+import { connectSocket } from "./socket";
+
+// Page refresh: restore the realtime connection for an already-logged-in user
+connectSocket();
 
 function NavbarWrapper() {
   const location = useLocation();

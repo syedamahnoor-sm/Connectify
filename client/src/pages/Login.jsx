@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { useState, useRef } from "react";
 import { Eye, EyeOff, Mail, Lock, Loader2 } from "lucide-react";
 import axiosInstance from "../api/axiosInstance";
+import { connectSocket } from "../socket";
 
 function Login() {
     const navigate = useNavigate();
@@ -46,6 +47,8 @@ function Login() {
                 username: res.data.username,
                 profilePic: res.data.profilePic
             }));
+
+            connectSocket();
 
             toast.success("Welcome back! 👋");
             navigate("/feed");

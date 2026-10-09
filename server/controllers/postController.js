@@ -44,7 +44,8 @@ export const createPost = async (req, res) => {
 
   } catch (error) {
     console.log("CREATE POST ERROR:", error);
-    res.status(500).json({ message: error.message });
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong" });
   }
 };
 
@@ -59,7 +60,8 @@ export const getPosts = async (req, res) => {
     res.json(posts);
   } catch (error) {
     console.log("GET POSTS ERROR:", error);
-    res.status(500).json({ message: error.message });
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong" });
   }
 };
 
@@ -138,7 +140,8 @@ export const toggleLike = async (req, res) => {
     res.json(updatedPost);
 
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong" });
   }
 };
 
@@ -151,9 +154,14 @@ export const addComment = async (req, res) => {
       return res.status(404).json({ message: "Post not found" });
     }
 
+    const text = typeof req.body.text === "string" ? req.body.text.trim() : "";
+    if (!text || text.length > 500) {
+      return res.status(400).json({ message: "Comment must be 1-500 characters" });
+    }
+
     const comment = {
       user: req.user.id,
-      text: req.body.text,
+      text,
     };
 
     post.comments.push(comment);
@@ -165,36 +173,69 @@ export const addComment = async (req, res) => {
     res.json(populatedPost.comments);
 
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong" });
   }
 };
 
 // DELETE COMMENT
+// Allowed for: the comment's author, or the owner of the post
 export const deleteComment = async (req, res) => {
-  const post = await Post.findById(req.params.postId);
+  try {
+    const post = await Post.findById(req.params.postId);
+    if (!post) return res.status(404).json({ message: "Post not found" });
 
-  post.comments = post.comments.filter(
-    (c) => c._id.toString() !== req.params.commentId
-  );
+    const comment = post.comments.id(req.params.commentId);
+    if (!comment) return res.status(404).json({ message: "Comment not found" });
 
-  await post.save();
+    const isCommentAuthor = comment.user?.toString() === req.user.id;
+    const isPostOwner = post.user.toString() === req.user.id;
 
-  res.json(post.comments);
+    if (!isCommentAuthor && !isPostOwner) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    post.comments = post.comments.filter(
+      (c) => c._id.toString() !== req.params.commentId
+    );
+
+    await post.save();
+
+    res.json(post.comments);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
 };
 
 // EDIT COMMENT
+// Allowed for: the comment's author only
 export const editComment = async (req, res) => {
-  const post = await Post.findById(req.params.postId);
+  try {
+    const text = typeof req.body.text === "string" ? req.body.text.trim() : "";
+    if (!text || text.length > 500) {
+      return res.status(400).json({ message: "Comment must be 1-500 characters" });
+    }
 
-  const comment = post.comments.id(req.params.commentId);
+    const post = await Post.findById(req.params.postId);
+    if (!post) return res.status(404).json({ message: "Post not found" });
 
-  if (!comment) return res.status(404).json({ message: "Not found" });
+    const comment = post.comments.id(req.params.commentId);
+    if (!comment) return res.status(404).json({ message: "Comment not found" });
 
-  comment.text = req.body.text;
+    if (comment.user?.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
 
-  await post.save();
+    comment.text = text;
 
-  res.json(post.comments);
+    await post.save();
+
+    res.json(post.comments);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
 };
 
 
@@ -212,8 +253,7 @@ export const getSinglePost = async (req, res) => {
 
     res.json(post);
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong" });
   }
 };

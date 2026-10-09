@@ -13,6 +13,7 @@ import AboutSection from "../components/profile/AboutSection";
 import MediaSection from "../components/profile/MediaSection";
 import PostsSection from "../components/profile/PostsSection";
 import SettingsSection from "../components/profile/SettingsSection";
+import { disconnectSocket } from "../socket";
 
 function Profile() {
     const { id } = useParams();
@@ -258,6 +259,7 @@ function Profile() {
             await API.delete("/users/delete-account");
 
             toast.success("Account deleted.");
+            disconnectSocket();
             localStorage.clear();
             navigate("/login");
 
